@@ -6,7 +6,7 @@ TARGET_DIR = "/app/model_download"
 
 
 def find_in_runpod_cache(repo_id):
-    safe_repo = f"models--{repo_id.replace('/', '--')}"
+    safe_repo = f"models--{repo_id.replace('/', '--').lower()}"
     repo_path = os.path.join(RUNPOD_CACHE_DIR, safe_repo, "snapshots")
 
     if not os.path.exists(repo_path):
@@ -24,10 +24,12 @@ def prepare_model():
 
     os.makedirs(TARGET_DIR, exist_ok=True)
 
+    # Point HF_HOME at the RunPod cache so snapshot_download reuses it
+    os.environ["HF_HOME"] = "/runpod-volume/huggingface-cache"
+
     cached_path = find_in_runpod_cache(model_id)
     if cached_path:
         print(f"Found in RunPod cache: {cached_path}")
-        # Symlink each file from the cached snapshot into our target dir
         for fname in os.listdir(cached_path):
             src = os.path.join(cached_path, fname)
             dst = os.path.join(TARGET_DIR, fname)
@@ -38,7 +40,7 @@ def prepare_model():
             f.write(TARGET_DIR)
         return
 
-    print(f"Not in cache. Downloading {model_id}...")
+    print(f"Not in RunPod cache. Downloading {model_id}...")
     local_path = snapshot_download(
         repo_id=model_id,
         local_dir=TARGET_DIR,
