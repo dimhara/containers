@@ -1,0 +1,7 @@
+ARG TARGET_DEVICE=cuda12.4
+FROM ghcr.io/dimhara/containers/hf-base:${TARGET_DEVICE}
+
+USER agent
+WORKDIR /home/agent/workspace
+
+CMD ["/bin/bash"]

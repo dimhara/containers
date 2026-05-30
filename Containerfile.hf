@@ -1,0 +1,35 @@
+FROM python:3.12-slim
+
+ARG CUTOFF_DATE="1 week"
+ARG TARGET_DEVICE=cuda12.4
+
+RUN apt-get update \
+ && apt-get install -y ffmpeg libsndfile1 ca-certificates curl less nano bat \
+ && if [ "$TARGET_DEVICE" = "rocm7.2" ]; then apt-get install -y libnuma1; fi \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN useradd -m -u 1000 agent
+USER agent
+WORKDIR /home/agent
+
+ENV DO_NOT_TRACK=1
+ENV HF_HUB_DISABLE_TELEMETRY=1
+ENV PATH="/home/agent/.local/bin:$PATH"
+
+ENV VIRTUAL_ENV="/home/agent/venv"
+ENV PATH="/home/agent/.local/bin:${VIRTUAL_ENV}/bin:$PATH"
+RUN pip install --no-cache-dir --user uv && uv cache clean
+
+ENV HF_HOME="/home/agent/hf_cache"
+
+RUN uv venv $VIRTUAL_ENV && \
+    uv pip install --no-cache --torch-backend "$TARGET_DEVICE" --exclude-newer "$CUTOFF_DATE" \
+    torch torchaudio \
+    "transformers>=5.4.0" soundfile librosa && \
+    uv cache clean
+
+RUN mkdir -p /home/agent/workspace && \
+    echo '[ -f /home/agent/workspace/init.sh ] && . /home/agent/workspace/init.sh' >> /home/agent/.bashrc
+
+WORKDIR /home/agent/workspace
+CMD ["/bin/bash"]
