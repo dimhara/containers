@@ -1,8 +1,8 @@
 import os
-import shutil
-from huggingface_hub import hf_hub_download
+from huggingface_hub import snapshot_download
 
 RUNPOD_CACHE_DIR = "/runpod-volume/huggingface-cache/hub"
+TARGET_DIR = "/app/model_download"
 
 
 def find_in_runpod_cache(repo_id):
@@ -22,38 +22,31 @@ def find_in_runpod_cache(repo_id):
 def prepare_model():
     model_id = os.environ.get("MODEL_ID", "microsoft/VibeVoice-ASR-HF")
 
+    os.makedirs(TARGET_DIR, exist_ok=True)
+
     cached_path = find_in_runpod_cache(model_id)
     if cached_path:
         print(f"Found in RunPod cache: {cached_path}")
+        # Symlink each file from the cached snapshot into our target dir
+        for fname in os.listdir(cached_path):
+            src = os.path.join(cached_path, fname)
+            dst = os.path.join(TARGET_DIR, fname)
+            if not os.path.exists(dst):
+                os.symlink(src, dst)
+        print(f"Linked cached files to: {TARGET_DIR}")
         with open("/app/.model_path", "w") as f:
-            f.write(cached_path)
+            f.write(TARGET_DIR)
         return
 
     print(f"Not in cache. Downloading {model_id}...")
-    try:
-        downloaded_path = hf_hub_download(
-            repo_id=model_id,
-            filename="model.safetensors",
-            local_dir="/app/model_download",
-            local_dir_use_symlinks=False,
-        )
-        parent = os.path.dirname(downloaded_path)
-        with open("/app/.model_path", "w") as f:
-            f.write(parent)
-        print(f"Downloaded to: {parent}")
-    except Exception as e:
-        print(f"Download failed (may be multi-file model): {e}")
-        print("Attempting full repo download via snapshot_download...")
-        from huggingface_hub import snapshot_download
-
-        local_path = snapshot_download(
-            repo_id=model_id,
-            local_dir="/app/model_download",
-            local_dir_use_symlinks=False,
-        )
-        with open("/app/.model_path", "w") as f:
-            f.write(local_path)
-        print(f"Downloaded snapshot to: {local_path}")
+    local_path = snapshot_download(
+        repo_id=model_id,
+        local_dir=TARGET_DIR,
+        local_dir_use_symlinks=True,
+    )
+    print(f"Downloaded to: {local_path}")
+    with open("/app/.model_path", "w") as f:
+        f.write(TARGET_DIR)
 
 
 if __name__ == "__main__":
