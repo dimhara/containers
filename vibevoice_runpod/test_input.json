@@ -1,0 +1,9 @@
+{
+    "input": {
+        "audio": "https://huggingface.co/datasets/bezzam/vibevoice_samples/resolve/main/example_output/VibeVoice-1.5B_output.wav",
+        "prompt": null,
+        "format": "parsed",
+        "is_encrypted": false,
+        "debug": true
+    }
+}
