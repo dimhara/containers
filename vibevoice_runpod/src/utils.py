@@ -13,7 +13,6 @@ def prepare_model():
     snapshot_download(
         repo_id=model_id,
         local_dir=TARGET_DIR,
-        local_dir_use_symlinks=True,
     )
     print(f"Downloaded to: {TARGET_DIR}")
     with open("/app/.model_path", "w") as f:

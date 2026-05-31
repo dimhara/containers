@@ -2,11 +2,12 @@ ARG TARGET_DEVICE=cuda12.4
 FROM ghcr.io/dimhara/containers/hf-base:${TARGET_DEVICE}
 
 USER root
-RUN pip install --no-cache-dir "transformers>=5.4.0" "huggingface_hub>=0.32.0" cryptography runpod
-
 COPY vibevoice_runpod/ /app/
-WORKDIR /app
+RUN chown -R agent:agent /app
 
-RUN chmod +x /app/src/start.sh
+USER agent
+WORKDIR /app
+RUN pip install --no-cache-dir "transformers>=5.4.0" "huggingface_hub>=0.32.0" cryptography runpod && \
+    chmod +x /app/src/start.sh
 
 CMD ["bash", "/app/src/start.sh"]
