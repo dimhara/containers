@@ -2,8 +2,7 @@ ARG TARGET_DEVICE=cuda12.4
 FROM ghcr.io/dimhara/containers/hf-base:${TARGET_DEVICE}
 
 USER root
-ENV HF_HOME=/runpod-volume/huggingface-cache
-RUN pip install --no-cache-dir "transformers>=5.3.0" cryptography
+RUN pip install --no-cache-dir "transformers>=5.4.0" "huggingface_hub>=0.32.0" cryptography
 
 COPY vibevoice_runpod/ /app/
 WORKDIR /app

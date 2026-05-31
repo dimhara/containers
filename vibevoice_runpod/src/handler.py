@@ -8,8 +8,6 @@ ENCRYPTION_KEY = os.environ.get("ENCRYPTION_KEY")
 cipher = Fernet(ENCRYPTION_KEY.encode()) if ENCRYPTION_KEY else None
 
 MODEL_PATH = os.environ["LOCAL_MODEL_PATH"]
-os.environ["HF_HUB_OFFLINE"] = "1"
-os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
 print(f"Loading model from {MODEL_PATH}...")
 processor = AutoProcessor.from_pretrained(MODEL_PATH, local_files_only=True)
