@@ -7,7 +7,7 @@ RUN chown -R agent:agent /app
 
 USER agent
 WORKDIR /app
-RUN uv pip install --no-cache "transformers>=5.4.0" "huggingface_hub>=0.32.0" cryptography runpod && \
+RUN uv pip install --no-cache "transformers>=5.4.0" "huggingface_hub>=0.32.0" cryptography runpod accelerate && \
     chmod +x /app/src/start.sh
 
 CMD ["bash", "/app/src/start.sh"]
