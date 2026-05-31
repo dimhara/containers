@@ -1,7 +1,7 @@
 FROM python:3.12-slim
 
 ARG CUTOFF_DATE="1 week"
-ARG TARGET_DEVICE=cu124
+ARG TARGET_DEVICE=cu128
 
 RUN apt-get update \
  && apt-get install -y ffmpeg libsndfile1 ca-certificates curl less nano bat \
