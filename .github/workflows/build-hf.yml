@@ -38,10 +38,9 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.HF_IMAGE }}:latest
-            ${{ env.REGISTRY }}/${{ env.HF_IMAGE }}:cuda12.8
+            ${{ env.REGISTRY }}/${{ env.HF_IMAGE }}:cpu
 
   vibevoice:
-    needs: hf-base
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -65,4 +64,4 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.VV_IMAGE }}:latest
-            ${{ env.REGISTRY }}/${{ env.VV_IMAGE }}:cuda12.8
+            ${{ env.REGISTRY }}/${{ env.VV_IMAGE }}:cuda13

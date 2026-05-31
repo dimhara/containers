@@ -18,6 +18,8 @@ setup_ssh() {
     fi
 }
 
+setup_ssh
+
 echo "Preparing model..."
 python3 /app/src/utils.py
 
