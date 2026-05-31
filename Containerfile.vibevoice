@@ -16,7 +16,7 @@ RUN pip3 install --no-cache-dir uv && uv cache clean
 RUN uv venv $VIRTUAL_ENV
 
 RUN uv pip install --no-cache \
-    --index-url https://download.pytorch.org/whl/cu130 \
+    --extra-index-url https://download.pytorch.org/whl/cu130 \
     torch torchaudio \
     "transformers>=5.4.0" "huggingface_hub>=0.32.0" soundfile librosa \
     cryptography runpod accelerate && \
