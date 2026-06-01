@@ -6,6 +6,7 @@ on:
     paths:
       - 'Containerfile.hf'
       - 'Containerfile.vibevoice'
+      - 'vibevoice_runpod/**'
   workflow_dispatch:
 
 env:
