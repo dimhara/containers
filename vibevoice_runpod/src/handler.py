@@ -2,6 +2,7 @@ import os
 import io
 import json
 import base64
+import torch
 import soundfile as sf
 import runpod
 from cryptography.fernet import Fernet
@@ -15,7 +16,8 @@ MODEL_PATH = os.environ["LOCAL_MODEL_PATH"]
 print(f"Loading model from {MODEL_PATH}...")
 processor = AutoProcessor.from_pretrained(MODEL_PATH, local_files_only=True)
 model = VibeVoiceAsrForConditionalGeneration.from_pretrained(
-    MODEL_PATH, local_files_only=True, device_map="auto"
+    MODEL_PATH, local_files_only=True, device_map="auto",
+    torch_dtype=torch.bfloat16, low_cpu_mem_usage=True
 )
 print(f"Model loaded on {model.device} with dtype {model.dtype}")
 
