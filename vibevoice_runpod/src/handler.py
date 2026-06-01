@@ -55,10 +55,14 @@ def handler(job):
         if isinstance(audio, str):
             audio_bytes = base64.b64decode(audio)
             audio, sr = sf.read(io.BytesIO(audio_bytes))
-            audio = (audio, sr)
+            if audio.ndim > 1:
+                audio = audio.mean(axis=1)
+            audio = audio.astype("float32")
+        else:
+            sr = None
 
         inputs = processor.apply_transcription_request(
-            audio=audio, prompt=prompt
+            audio=audio, sampling_rate=sr, prompt=prompt
         ).to(model.device, model.dtype)
 
         gen_kwargs = {}
