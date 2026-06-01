@@ -1,4 +1,4 @@
-FROM nvidia/cuda:13.0.2-runtime-ubuntu22.04
+FROM nvidia/cuda:13.0.2-runtime-ubuntu24.04
 
 RUN apt-get update && apt-get install -y \
     ffmpeg libsndfile1 python3 python3-pip python3-venv ca-certificates curl \
@@ -10,9 +10,10 @@ ENV DO_NOT_TRACK=1
 ENV HF_HUB_DISABLE_TELEMETRY=1
 ENV HF_HOME="/home/agent/hf_cache"
 ENV VIRTUAL_ENV="/home/agent/venv"
-ENV PATH="/home/agent/venv/bin:$PATH"
+ENV PATH="/home/agent/venv/bin:/home/agent/.local/bin:$PATH"
 
-RUN pip3 install --no-cache-dir uv && uv cache clean
+USER agent
+RUN pip3 install --user --no-cache-dir uv && uv cache clean
 RUN uv venv $VIRTUAL_ENV
 
 RUN uv pip install --no-cache \
