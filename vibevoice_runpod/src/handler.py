@@ -3,6 +3,7 @@ import io
 import json
 import base64
 import torch
+import librosa
 import soundfile as sf
 import runpod
 from cryptography.fernet import Fernet
@@ -57,12 +58,12 @@ def handler(job):
             audio, sr = sf.read(io.BytesIO(audio_bytes))
             if audio.ndim > 1:
                 audio = audio.mean(axis=1)
+            if sr != 24000:
+                audio = librosa.resample(audio, orig_sr=sr, target_sr=24000)
             audio = audio.astype("float32")
-        else:
-            sr = None
 
         inputs = processor.apply_transcription_request(
-            audio=audio, sampling_rate=sr, prompt=prompt
+            audio=audio, prompt=prompt
         ).to(model.device, model.dtype)
 
         gen_kwargs = {}
