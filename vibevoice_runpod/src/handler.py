@@ -1,5 +1,8 @@
 import os
+import io
 import json
+import base64
+import soundfile as sf
 import runpod
 from cryptography.fernet import Fernet
 from transformers import AutoProcessor, VibeVoiceAsrForConditionalGeneration
@@ -47,6 +50,11 @@ def handler(job):
     print(f"Processing audio (format={fmt}, tokenizer_chunk={tokenizer_chunk})")
 
     try:
+        if isinstance(audio, str):
+            audio_bytes = base64.b64decode(audio)
+            audio, sr = sf.read(io.BytesIO(audio_bytes))
+            audio = (audio, sr)
+
         inputs = processor.apply_transcription_request(
             audio=audio, prompt=prompt
         ).to(model.device, model.dtype)
