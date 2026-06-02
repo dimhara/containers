@@ -1,0 +1,8 @@
+# Test-only dependencies (no torch / transformers)
+pytest>=8.0
+cryptography
+soundfile
+librosa
+numpy
+requests
+runpod
