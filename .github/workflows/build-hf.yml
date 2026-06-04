@@ -4,10 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'Containerfile.hf'
-      - 'Containerfile.vibevoice'
-      - 'vibevoice_runpod/**'
-      - 'vad/**'
+      - 'local/**'
+      - 'nvidia/**'
   workflow_dispatch:
 
 env:
@@ -36,8 +34,8 @@ jobs:
       - name: Build and push hf-base
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: Containerfile.hf
+          context: ./local
+          file: local/Containerfile.hf
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.HF_IMAGE }}:latest
@@ -62,8 +60,8 @@ jobs:
       - name: Build and push vibevoice
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: Containerfile.vibevoice
+          context: ./nvidia
+          file: nvidia/Containerfile.vibevoice
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.VV_IMAGE }}:latest
@@ -88,8 +86,8 @@ jobs:
       - name: Build and push vad
         uses: docker/build-push-action@v6
         with:
-          context: ./vad
-          file: vad/Containerfile.vad
+          context: ./local
+          file: local/Containerfile.vad
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.VAD_IMAGE }}:latest

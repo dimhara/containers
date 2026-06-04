@@ -4,10 +4,10 @@ on:
   push:
     branches: [main]
     paths:
-      - 'vibevoice_runpod/**'
+      - 'nvidia/vibevoice_runpod/**'
   pull_request:
     paths:
-      - 'vibevoice_runpod/**'
+      - 'nvidia/vibevoice_runpod/**'
   workflow_dispatch:
 
 jobs:
@@ -23,11 +23,11 @@ jobs:
           python-version: "3.12"
 
       - name: Install test dependencies
-        working-directory: vibevoice_runpod/tests
+        working-directory: nvidia/vibevoice_runpod/tests
         run: |
           pip install -r requirements-test.txt
 
       - name: Run tests
-        working-directory: vibevoice_runpod
+        working-directory: nvidia/vibevoice_runpod
         run: |
           python -m pytest tests/ -v --tb=short
