@@ -1,0 +1,21 @@
+FROM ghcr.io/dimhara/containers/hf-base:cpu
+#Also ... hf-rocm7.2
+
+# Build-args                                                                                                                                  
+ARG CUTOFF_DATE="1 week"
+
+USER root
+
+# 1. Install extras
+RUN apt-get update && apt-get install -y --no-install-recommends \
+     ripgrep fd-find rsync ncdu rocminfo \
+    && rm -rf /var/lib/apt/lists/*
+
+USER agent
+
+# torchcodec will be cpu because no rocm support yet
+RUN uv pip install --no-cache --exclude-newer "$CUTOFF_DATE" silero-vad torchcodec bitsandbytes accelerate
+
+WORKDIR /home/agent/workspace
+CMD ["/bin/bash"]
+

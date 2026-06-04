@@ -1,4 +1,4 @@
-name: Build hf-base & vibevoice
+name: Build containers
 
 on:
   push:
@@ -7,12 +7,14 @@ on:
       - 'Containerfile.hf'
       - 'Containerfile.vibevoice'
       - 'vibevoice_runpod/**'
+      - 'vad/**'
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
   HF_IMAGE: ${{ github.repository }}/hf-base
   VV_IMAGE: ${{ github.repository }}/vibevoice
+  VAD_IMAGE: ${{ github.repository }}/vad
 
 jobs:
   hf-base:
@@ -66,3 +68,29 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.VV_IMAGE }}:latest
             ${{ env.REGISTRY }}/${{ env.VV_IMAGE }}:cuda13
+
+  vad:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push vad
+        uses: docker/build-push-action@v6
+        with:
+          context: ./vad
+          file: vad/Containerfile.vad
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.VAD_IMAGE }}:latest
+            ${{ env.REGISTRY }}/${{ env.VAD_IMAGE }}:cpu
